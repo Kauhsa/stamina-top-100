@@ -1,8 +1,0 @@
-version: '3'
-
-services:
-  postgres:
-    image: 10-alpine
-    environment:
-      POSTGRES_USER: stamina
-      POSTGRES_PASSWORD: password
