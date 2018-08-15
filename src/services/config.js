@@ -19,3 +19,5 @@ function getEnv(name, required = true) {
 export const isDevelopment = getEnv('NODE_ENV') === 'development'
 export const databaseUrl = getEnv('DATABASE_URL')
 export const port = getEnv('PORT')
+export const googleClientId = getEnv('GOOGLE_CLIENT_ID')
+export const jwtSecret = getEnv('JWT_SECRET')

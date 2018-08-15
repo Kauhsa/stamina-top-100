@@ -52,7 +52,7 @@ function webpackConfig({ server, dev }) {
       rules: [
         {
           test: /\.js$/,
-          exclude: /node_modules/,
+          exclude: [getPath('../node_modules')],
           use: {
             loader: 'babel-loader',
             options: babelConfig

@@ -4,17 +4,40 @@ import path from 'path'
 
 import postgraphile from 'postgraphile'
 import express from 'express'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import jwt from 'express-jwt'
 
-import * as config from './config'
+import * as config from './services/config'
+import * as auth from './services/auth'
+import userRoutes from './routes/user'
 
 const getPath = p => path.resolve(__dirname, p)
 
 async function start() {
   const app = express()
+  app.use(express.json())
+  app.use(cors())
+  app.use(cookieParser())
+
+  // jwt
+
+  app.use(
+    jwt({
+      secret: config.jwtSecret,
+      credentialsRequired: false,
+      getToken: auth.getTokenFromRequest,
+      requestProperty: 'jwt'
+    })
+  )
+
+  // custom routes
+
+  app.use('/api/user', userRoutes)
 
   // postgraphile
 
-  app.use(postgraphile(config.databaseUrl, 'stamina', { graphiql: true }))
+  app.use(postgraphile(config.databaseUrl, 'stamina', { graphiql: config.isDevelopment }))
 
   // serving JS code
 
