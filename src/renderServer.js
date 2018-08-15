@@ -13,16 +13,16 @@ const renderServer = ({ clientStats }) => (req, res) => {
   })
 
   res.send(stripIndent`
-      <!doctype html>
-      <html>
-        <head>
-        </head>
-        <body>
-          <div id="root">${app}</div>
-          ${js}
-        </body>
-      </html>
-    `)
+    <!doctype html>
+    <html>
+    <head>
+    </head>
+    <body>
+      <div id="root">${app}</div>
+      ${js}
+    </body>
+    </html>
+  `)
 }
 
 export default renderServer
