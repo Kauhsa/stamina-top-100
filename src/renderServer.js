@@ -6,6 +6,7 @@ import fetch from 'node-fetch'
 import ApolloClient from 'apollo-boost'
 import { getDataFromTree } from 'react-apollo'
 import { renderStylesToString } from 'emotion-server'
+import { StaticRouter } from 'react-router'
 
 import * as config from './services/config'
 import App from './client/App'
@@ -39,7 +40,12 @@ const renderServer = ({ clientStats }) => async (req, res, next) => {
   try {
     const initialState = getInitialState(req)
     const serverApolloClient = getServerApolloClient(req)
-    const app = <App initialState={initialState} apolloClient={serverApolloClient} />
+
+    const app = (
+      <StaticRouter location={req.url} context={{}}>
+        <App initialState={initialState} apolloClient={serverApolloClient} />
+      </StaticRouter>
+    )
 
     await getDataFromTree(app)
     const apolloInitialState = serverApolloClient.cache.extract()
@@ -53,8 +59,9 @@ const renderServer = ({ clientStats }) => async (req, res, next) => {
 
     res.send(`
       <!doctype html>
-      <html>
+      <html lang="en">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
       </head>
       <body>
         <div id="root">${content}</div>

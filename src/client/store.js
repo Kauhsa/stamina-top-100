@@ -1,9 +1,13 @@
 import { init } from '@rematch/core'
 import { mapValues } from 'lodash'
 
+import * as api from './api'
+import history from './history'
+
 const user = {
   state: {
-    loggedUserId: null
+    loggedUserId: null,
+    notFoundUserIdToken: null
   },
 
   reducers: {
@@ -11,10 +15,40 @@ const user = {
       return { ...state, loggedUserId: userId }
     },
 
-    clearLoggedUser(state, payload) {
-      return { ...state, loggedUserId: null }
+    userNotFoundWithIdToken(state, idToken) {
+      return { ...state, notFoundUserIdToken: idToken }
     }
-  }
+  },
+
+  effects: dispatch => ({
+    async authenticate(idToken) {
+      try {
+        const { userId } = await api.authenticate(idToken)
+        dispatch.user.setLoggedUser(userId)
+      } catch (e) {
+        if (e.response && e.response.data.error == 'no-user-matching-token') {
+          dispatch.user.userNotFoundWithIdToken(idToken)
+          history.push('/createUser')
+        } else {
+          throw e
+        }
+      }
+    },
+
+    async create(user, state) {
+      const { userId } = await api.createUser({
+        ...user,
+        idToken: state.user.notFoundUserIdToken
+      })
+
+      dispatch.user.setLoggedUser(userId)
+    },
+
+    async logout() {
+      await api.logout()
+      dispatch.user.setLoggedUser(null)
+    }
+  })
 }
 
 const config = {

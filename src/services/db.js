@@ -2,7 +2,7 @@ import pgPromise from 'pg-promise'
 
 import * as config from './config'
 
-const db = pgPromise()(config.databaseUrl)
+export const db = pgPromise()(config.databaseUrl)
 
 export async function getUserIdByGoogleId(googleId) {
   const row = await db.oneOrNone(
@@ -16,7 +16,7 @@ export async function getUserIdByGoogleId(googleId) {
 }
 
 export async function createUserAndGetId({ name, googleId, email }) {
-  await db.tx(async t => {
+  return await db.tx(async t => {
     const { id } = await t.one(
       `INSERT INTO stamina.user (name)
       VALUES ($(name))

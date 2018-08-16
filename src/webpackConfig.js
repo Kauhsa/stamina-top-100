@@ -1,14 +1,22 @@
 /* eslint-disable import/no-commonjs */
 
 const path = require('path')
+const fs = require('fs')
 
 const webpack = require('webpack')
-const nodeExternals = require('webpack-node-externals')
 const StatsPlugin = require('stats-webpack-plugin')
 
 const babelConfig = require('../babel.config')
 
 const getPath = p => path.resolve(__dirname, p)
+
+const serverExternals = fs
+  .readdirSync(getPath('../node_modules'))
+  .filter(x => !/\.bin|react-universal-component|webpack-flush-chunks/.test(x))
+  .reduce((externals, mod) => {
+    externals[mod] = `commonjs ${mod}`
+    return externals
+  }, {})
 
 function webpackConfig({ server, dev }) {
   const client = !server
@@ -29,7 +37,7 @@ function webpackConfig({ server, dev }) {
     ...(server && {
       entry: ['@babel/polyfill', getPath('./renderServer.js')],
       target: 'node',
-      externals: [nodeExternals()],
+      externals: serverExternals,
       node: {
         __dirname: false
       }
@@ -61,11 +69,17 @@ function webpackConfig({ server, dev }) {
       ]
     },
 
-    ...(prod && {
-      plugins: [new StatsPlugin('stats.json')]
-    }),
-
-    ...(dev && { plugins: [new webpack.HotModuleReplacementPlugin()] })
+    plugins: [
+      ...(prod ? [new StatsPlugin('stats.json')] : []),
+      ...(dev ? [new webpack.HotModuleReplacementPlugin()] : []),
+      ...(server
+        ? [
+            new webpack.optimize.LimitChunkCountPlugin({
+              maxChunks: 1
+            })
+          ]
+        : [])
+    ]
   }
 }
 

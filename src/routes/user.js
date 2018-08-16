@@ -44,4 +44,9 @@ router.post('/create', async (req, res) => {
   res.json({ userId })
 })
 
+router.post('/logout', async (req, res) => {
+  auth.removeTokenCookie(res)
+  res.sendStatus(201)
+})
+
 export default router

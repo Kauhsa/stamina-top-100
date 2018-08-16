@@ -13,3 +13,7 @@ export const createUser = async ({ name, idToken }) => {
   const res = await client.post('/user/create', { name, idToken })
   return res.data
 }
+
+export const logout = async () => {
+  await client.post('/user/logout')
+}

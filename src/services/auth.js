@@ -15,4 +15,8 @@ export const createTokenCookie = (res, userId) => {
   })
 }
 
+export const removeTokenCookie = res => {
+  res.clearCookie(tokenCookieName)
+}
+
 export const getTokenFromRequest = res => res.cookies[tokenCookieName] || null
