@@ -5,6 +5,7 @@ import { flushChunkNames, clearChunks } from 'react-universal-component/server'
 import fetch from 'node-fetch'
 import ApolloClient from 'apollo-boost'
 import { getDataFromTree } from 'react-apollo'
+import { renderStylesToString } from 'emotion-server'
 
 import * as config from './services/config'
 import App from './client/App'
@@ -44,7 +45,7 @@ const renderServer = ({ clientStats }) => async (req, res, next) => {
     const apolloInitialState = serverApolloClient.cache.extract()
     clearChunks()
 
-    const content = ReactDOMServer.renderToString(app)
+    const content = renderStylesToString(ReactDOMServer.renderToString(app))
 
     const { js } = flushChunks(clientStats, {
       chunkNames: flushChunkNames()

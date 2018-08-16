@@ -13,7 +13,8 @@ const plugins = [
   ['@babel/plugin-proposal-class-properties', { loose: false }],
   '@babel/plugin-proposal-json-strings',
   'universal-import',
-  'react-hot-loader/babel'
+  'react-hot-loader/babel',
+  'babel-plugin-emotion'
 ]
 
 module.exports = { presets, plugins }
